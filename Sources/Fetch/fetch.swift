@@ -21,7 +21,11 @@ public struct Header {
 var defaultFetchHeaderFunc: (() -> [Header])? = nil
 
 public func fetch<A: QueryStringEncodable, B: Codable, C: Codable>(
-	url: String, query: A?, method: Method? = nil, body: B? = nil, headers: [Header]? = nil
+	url: String,
+	query: A?,
+	method: Method? = nil,
+	body: B? = nil,
+	headers: [Header]? = nil
 ) async throws -> C {
 	var urlStr = url
 	if let query = query {
@@ -54,7 +58,10 @@ public func fetch<A: QueryStringEncodable, B: Codable, C: Codable>(
 }
 
 public func fetch<A: Codable, B: Codable>(
-	url: String, method: Method? = nil, body: A? = nil, headers: [Header]? = nil
+	url: String,
+	method: Method? = nil,
+	body: A? = nil,
+	headers: [Header]? = nil
 ) async throws -> B {
 	var request = URLRequest(url: URL(string: url)!)
 	request.httpMethod = method?.rawValue ?? "GET"
@@ -83,7 +90,9 @@ public func fetch<A: Codable, B: Codable>(
 }
 
 public func fetch<A: Codable>(
-	url: String, method: Method? = nil, headers: [Header]? = nil
+	url: String,
+	method: Method? = nil,
+	headers: [Header]? = nil
 ) async throws -> A {
 	var request = URLRequest(url: URL(string: url)!)
 	request.httpMethod = method?.rawValue ?? "GET"
@@ -109,7 +118,10 @@ public func fetch<A: Codable>(
 }
 
 public func fetch<A: QueryStringEncodable, B: Codable>(
-	url: String, query: A, method: Method? = nil, headers: [Header]? = nil
+	url: String,
+	query: A,
+	method: Method? = nil,
+	headers: [Header]? = nil
 ) async throws -> B {
 	var request = URLRequest(url: URL(string: url + query.queryString)!)
 	request.httpMethod = method?.rawValue ?? "GET"

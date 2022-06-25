@@ -7,10 +7,6 @@
 ```swift
 import Fetch
 
-struct Query: Codable {
-	var id: String
-}
-
 struct Response: Codable {
 	var id: String
 	var name: String
@@ -18,12 +14,14 @@ struct Response: Codable {
 }
 
 func someFunc() throws async {
-	let query = Query(
-		id: "1dab17eb-4789-484b-9ac7-a8df16ac1553",
-	)
+	struct Query: QueryStringEncodable {
+		var id: String
+	}
 	let data: Response = try await fetch(
 		url: "https://api.website.com/user",
-		query: query
+		query: Query(
+			id: "1dab17eb-4789-484b-9ac7-a8df16ac1553",
+		)
 	)
 	print(data)
 }

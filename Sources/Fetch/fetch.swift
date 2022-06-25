@@ -2,6 +2,7 @@ import Foundation
 
 public enum Error: Swift.Error {
 	case invalidStatusCode(Int, Any?)
+	case encodingError
 }
 
 public enum Method: String {
@@ -19,10 +20,14 @@ public struct Header {
 
 var defaultFetchHeaderFunc: (() -> [Header])? = nil
 
-public func fetch<A: Codable, B: Codable, C: Codable>(
+public func fetch<A: QueryStringEncodable, B: Codable, C: Codable>(
 	url: String, query: A?, method: Method? = nil, body: B? = nil, headers: [Header]? = nil
 ) async throws -> C {
-	var request = URLRequest(url: URL(string: url)!)
+	var urlStr = url
+	if let query = query {
+		urlStr += query.queryString
+	}
+	var request = URLRequest(url: URL(string: urlStr)!)
 	request.httpMethod = method?.rawValue ?? "GET"
 	let encoder = JSONEncoder()
 	let bodyData: Data? = body != nil ? try encoder.encode(body) : nil
@@ -103,10 +108,10 @@ public func fetch<A: Codable>(
 	return try decoder.decode(A.self, from: data)
 }
 
-public func fetch<A: Codable, B: Codable>(
+public func fetch<A: QueryStringEncodable, B: Codable>(
 	url: String, query: A, method: Method? = nil, headers: [Header]? = nil
 ) async throws -> B {
-	var request = URLRequest(url: URL(string: url)!)
+	var request = URLRequest(url: URL(string: url + query.queryString)!)
 	request.httpMethod = method?.rawValue ?? "GET"
 	request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 	if let hf = defaultFetchHeaderFunc {
@@ -138,8 +143,12 @@ struct TestThing: Codable {
 }
 
 public func test(request: URLRequest) async throws {
+	struct Query: QueryStringEncodable {
+		var id: String
+	}
 	let thing: String = try await fetch(
 		url: "http://preview.art",
+		query: Query(id: "ababababab"),
 		headers: [Header(key: "Bearer", value: "Test")]
 	)
 	print(thing)

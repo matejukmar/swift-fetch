@@ -84,12 +84,18 @@ func someFunc() throws async {
 		name: "Joe Black",
 		email: "joe@black.com"
 	)
-	let data: Response = try await fetch(
-		url: "https://api.website.com/user",
-		method: .POST,
-		body: body,
-		headers: [Header(key: "X-Header", value: "Value")]
-	)
-	print(data)
+	do {
+		let data: Response = try await fetch(
+			url: "https://api.website.com/user",
+			method: .POST,
+			body: body,
+			headers: [Header(key: "X-Header", value: "Value")]
+		)
+		print(data)
+	} catch Fetch.Error.invalidStatusCode(let staus) {
+		if (status == 401) {
+			// do something with it
+		}
+	}
 }
 ```

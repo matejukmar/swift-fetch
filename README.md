@@ -92,7 +92,7 @@ func someFunc() throws async {
 			headers: [Header(key: "X-Header", value: "Value")]
 		)
 		print(data)
-	} catch Fetch.Error.invalidStatusCode(let staus) {
+	} catch Fetch.Error.invalidStatusCode(let status) {
 		if (status == 401) {
 			// do something with it
 		}
